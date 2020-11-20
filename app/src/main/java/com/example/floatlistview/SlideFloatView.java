@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -14,6 +13,8 @@ import android.widget.Scroller;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.floatlistview.slide.base.BaseSlideListview;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,6 +46,9 @@ public class SlideFloatView extends LinearLayout {
 
     public void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
+        if (getChildAt(0) instanceof BaseSlideListview) {
+            ((BaseSlideListview) getChildAt(0)).setMaxHeight(maxHeight);
+        }
     }
 
     public int getParrentHeight() {
@@ -124,32 +128,32 @@ public class SlideFloatView extends LinearLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         parrentWidth = MeasureSpec.getSize(widthMeasureSpec);
         parrentHeight = MeasureSpec.getSize(heightMeasureSpec);
-        Log.e("SlideFloatView", "onMeasure--->height=" + parrentHeight);
+        Log.e("ViewGroup", "onMeasure--->height=" + parrentHeight);
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        Log.e("SlideFloatView", "onSizeChanged");
+        Log.e("ViewGroup", "onSizeChanged");
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        Log.e("SlideFloatView", "onLayout:" + "l=" + l + "\nt=" + t + "\nr=" + r + "\nb=" + b);
+        Log.e("ViewGroup", "onLayout:" + "l=" + l + "\nt=" + t + "\nr=" + r + "\nb=" + b);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.e("SlideFloatView", "onDraw");
+        Log.e("ViewGroup", "onDraw");
     }
 
     @Override
     public void computeScroll() {
         super.computeScroll();
         if (scroller.computeScrollOffset()) {
-            Log.e("SlideFloatView", "computeScroll()\n\tcomputeScroll---->" + "\n\tscroller.getCurrX()=" + scroller.getCurrX()
+            Log.e("ViewGroup", "computeScroll()\n\tcomputeScroll---->" + "\n\tscroller.getCurrX()=" + scroller.getCurrX()
                     + "\n\tscroller.getCurrY()=" + scroller.getCurrY() + "\n\t<----computeScroll");
 //            scrollTo(scroller.getCurrX(), scroller.getCurrY());
             View v = getChildAt(0);
@@ -165,16 +169,93 @@ public class SlideFloatView extends LinearLayout {
     }
 
     private float startY = -1;
-    private float moveY = -1;
-    private float upY = -1;
-    private float iStartY = -1;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-//        Log.e("ViewGroup", "dispatchTouchEvent--->MotionEvent=" + ev.getAction());
 
-//        Log.e("ViewGroup", "dispatchTouchEvent--->intercept=" + intercept);
-        return super.dispatchTouchEvent(ev);
+//        View child = getChildAt(0);
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_DOWN=" + ev.getY());
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_MOVE=" + ev.getY());
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_UP=" + ev.getY());
+//                break;
+//            default:
+//                break;
+//        }
+        boolean intercept = super.dispatchTouchEvent(ev);
+        Log.e("ViewGroup", "dispatchTouchEvent--->intercept=" + intercept + "\n============================");
+        View child = getChildAt(0);
+        if (child != null) {
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (isChildView(child, ev)) {
+                        startY = ev.getY();
+                        this.cOffset = 0;
+                    } else {
+                        startY = -1;
+                    }
+                    Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_DOWN=" + ev.getY());
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (startY >= 0 && !intercept) {
+                        if (scroller.getFinalY() + defaultHeight + startY - ev.getY() <= maxHeight) {
+                            if (Math.abs(startY - ev.getY()) > 0) {
+                                scroller.startScroll(0, scroller.getFinalY(), 0, (int) (startY - ev.getY()), DEFAULT_DURATION);
+                                postInvalidate();
+                            }
+                            if (startY - ev.getY() > 0) {
+                                if (scroller.getFinalY() < (offset - defaultHeight)) {
+                                    this.cOffset = -scroller.getFinalY() - defaultHeight;
+                                } else {
+                                    if (startY - ev.getY() > SKIP_BOUND)
+                                        this.cOffset = maxHeight - scroller.getFinalY() - defaultHeight;
+                                    else
+                                        this.cOffset = -scroller.getFinalY() + offset - defaultHeight;
+                                }
+                            } else if (startY - ev.getY() < 0) {
+                                if (scroller.getFinalY() < (offset - defaultHeight)) {
+                                    this.cOffset = -scroller.getFinalY() - defaultHeight;
+                                } else {
+                                    if (Math.abs(startY - ev.getY()) > SKIP_BOUND)
+                                        this.cOffset = -scroller.getFinalY() + offset - defaultHeight;
+                                    else
+                                        this.cOffset = maxHeight - scroller.getFinalY() - defaultHeight;
+                                }
+                            }
+                        } else {
+                            this.cOffset = 0;
+                            if (Math.abs(maxHeight - defaultHeight - scroller.getFinalY()) > 0) {
+                                scroller.startScroll(0, scroller.getFinalY(), 0, maxHeight - defaultHeight - scroller.getFinalY(), DEFAULT_DURATION);
+                                postInvalidate();
+                            }
+                        }
+                    }
+                    startY = ev.getY();
+                    Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_MOVE=" + ev.getY());
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (startY >= 0) {
+//                        upY = ev.getY();
+                        if (Math.abs(cOffset) > 0) slideView(cOffset);
+                    }
+                    Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_UP=" + ev.getY());
+                    break;
+//            case MotionEvent.ACTION_CANCEL:
+//                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_CANCEL=" + ev.getY());
+//                break;
+                default:
+                    startY = -1;
+//                    moveY = -1;
+//                    upY = -1;
+                    break;
+            }
+        }
+        return intercept;
     }
 
     private boolean isContentViewScrollTop(ListView mContentView) {
@@ -191,124 +272,108 @@ public class SlideFloatView extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        Log.e("ViewGroup", "onInterceptTouchEvent--->MotionEvent=" + ev.getAction());
-
-        View child = getChildAt(0);
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (isChildView(child, ev)) {
-                    iStartY = ev.getY();
-                } else {
-                    iStartY = -1;
-                }
-                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_DOWN=" + startY);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (iStartY >= 0) {
-                    if (iStartY - ev.getY() > 0 && scroller.getFinalY() < maxHeight / 3 * 2) {
-
-                        return true;
-                    }
-
-//                    else return super.onInterceptTouchEvent(ev);
-
-//                    if (scroller.getFinalY() < maxHeight) {
-//                        return true;
-//                    } else {
-//                        if (iStartY - ev.getY() < 0 && isContentViewScrollTop((ListView) child)) {
-//                            return true;
-//                        }
-//                        iStartY = ev.getY();
-//                    }
-                }
-                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_MOVE=" + moveY);
-//                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_MOVE=" + (moveY - startY));
-                break;
-            case MotionEvent.ACTION_UP:
-                upY = ev.getY();
-                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_UP=" + upY);
-                break;
-//            case MotionEvent.ACTION_CANCEL:
-//                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_CANCEL=" + ev.getY());
+        boolean intercept = super.onInterceptTouchEvent(ev);
+//        View child = getChildAt(0);
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                Log.e("ViewGroup", "onInterceptTouchEvent--->ACTION_DOWN=" + ev.getY());
+//                if (isChildView(child, ev)) {
+//                    startY = ev.getY();
+//                    this.cOffset = 0;
+//                } else {
+//                    startY = -1;
+//                }
 //                break;
-            default:
-                break;
-        }
-//        Log.e("ViewGroup", "onInterceptTouchEvent--->intercept=" + intercept);
-        return super.onInterceptTouchEvent(ev);
+//            case MotionEvent.ACTION_MOVE:
+//                Log.e("ViewGroup", "onInterceptTouchEvent--->ACTION_MOVE=" + ev.getY());
+////                if (startY - ev.getY() > 0 && scroller.getFinalY() < maxHeight) {
+////                    intercept = true;
+////                } else if (startY - ev.getY() < 0 && isContentViewScrollTop((ListView) child)) {
+////                    intercept = true;
+////                }
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                Log.e("ViewGroup", "onInterceptTouchEvent--->ACTION_UP=" + ev.getY());
+//                break;
+//            default:
+//                break;
+//        }
+        Log.e("ViewGroup", "onInterceptTouchEvent--->intercept=" + intercept);
+        return intercept;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+//        View child = getChildAt(0);
+//        if (child != null) {
+//            switch (ev.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+////                    if (isChildView(child, ev)) {
+////                        touch = true;
+////                        startY = ev.getY();
+////                        this.cOffset = 0;
+////                    } else {
+////                        startY = -1;
+////                    }
+//                    Log.e("ViewGroup", "onTouchEvent--->ACTION_DOWN=" + ev.getY());
+//                    break;
+//                case MotionEvent.ACTION_MOVE:
+//                    if (startY >= 0) {
+//                        moveY = ev.getY();
+//                        if (scroller.getFinalY() + defaultHeight + startY - moveY <= maxHeight) {
+//                            if (Math.abs(startY - moveY) > 0) {
+//                                scroller.startScroll(0, scroller.getFinalY(), 0, (int) (startY - moveY), DEFAULT_DURATION);
+//                                postInvalidate();
+//                            }
+//                            if (startY - moveY > 0) {
+//                                if (scroller.getFinalY() < (offset - defaultHeight)) {
+//                                    this.cOffset = -scroller.getFinalY() - defaultHeight;
+//                                } else {
+//                                    if (startY - moveY > SKIP_BOUND)
+//                                        this.cOffset = maxHeight - scroller.getFinalY() - defaultHeight;
+//                                    else
+//                                        this.cOffset = -scroller.getFinalY() + offset - defaultHeight;
+//                                }
+//                            } else if (startY - moveY < 0) {
+//                                if (scroller.getFinalY() < (offset - defaultHeight)) {
+//                                    this.cOffset = -scroller.getFinalY() - defaultHeight;
+//                                } else {
+//                                    if (Math.abs(startY - moveY) > SKIP_BOUND)
+//                                        this.cOffset = -scroller.getFinalY() + offset - defaultHeight;
+//                                    else
+//                                        this.cOffset = maxHeight - scroller.getFinalY() - defaultHeight;
+//                                }
+//                            }
+//                        } else {
+//                            this.cOffset = 0;
+//                            if (Math.abs(maxHeight - defaultHeight - scroller.getFinalY()) > 0) {
+//                                scroller.startScroll(0, scroller.getFinalY(), 0, maxHeight - defaultHeight - scroller.getFinalY(), DEFAULT_DURATION);
+//                                postInvalidate();
+//                            }
+//                        }
+//                        startY = moveY;
+//                    }
+//                    Log.e("ViewGroup", "onTouchEvent--->ACTION_MOVE=" + ev.getY());
+//                    break;
+//                case MotionEvent.ACTION_UP:
+//                    if (startY >= 0) {
+//                        upY = ev.getY();
+//                        if (Math.abs(cOffset) > 0) slideView(cOffset);
+//                    }
+//                    Log.e("ViewGroup", "onTouchEvent--->ACTION_UP=" + ev.getY());
+//                    break;
+////            case MotionEvent.ACTION_CANCEL:
+////                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_CANCEL=" + ev.getY());
+////                break;
+//                default:
+//                    startY = -1;
+//                    moveY = -1;
+//                    upY = -1;
+//                    break;
+//            }
+//        }
         boolean touch = super.onTouchEvent(ev);
-        View child = getChildAt(0);
-        if (child != null) {
-            switch (ev.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    if (isChildView(child, ev)) {
-                        touch = true;
-                        startY = ev.getY();
-                        this.cOffset = 0;
-                    } else {
-                        startY = -1;
-                    }
-                    Log.e("ViewGroup", "onTouchEvent--->ACTION_DOWN=" + ev.getY());
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (startY >= 0) {
-                        moveY = ev.getY();
-                        if (scroller.getFinalY() + defaultHeight + startY - moveY <= maxHeight) {
-                            if (Math.abs(startY - moveY) > 0) {
-                                scroller.startScroll(0, scroller.getFinalY(), 0, (int) (startY - moveY), DEFAULT_DURATION);
-                                postInvalidate();
-                            }
-                            if (startY - moveY > 0) {
-                                if (scroller.getFinalY() < (offset - defaultHeight)) {
-                                    this.cOffset = -scroller.getFinalY() - defaultHeight;
-                                } else {
-                                    if (startY - moveY > SKIP_BOUND)
-                                        this.cOffset = maxHeight - scroller.getFinalY() - defaultHeight;
-                                    else
-                                        this.cOffset = -scroller.getFinalY() + offset - defaultHeight;
-                                }
-                            } else if (startY - moveY < 0) {
-                                if (scroller.getFinalY() < (offset - defaultHeight)) {
-                                    this.cOffset = -scroller.getFinalY() - defaultHeight;
-                                } else {
-                                    if (Math.abs(startY - moveY) > SKIP_BOUND)
-                                        this.cOffset = -scroller.getFinalY() + offset - defaultHeight;
-                                    else
-                                        this.cOffset = maxHeight - scroller.getFinalY() - defaultHeight;
-                                }
-                            }
-                        } else {
-                            this.cOffset = 0;
-                            if (Math.abs(maxHeight - defaultHeight - scroller.getFinalY()) > 0) {
-                                scroller.startScroll(0, scroller.getFinalY(), 0, maxHeight - defaultHeight - scroller.getFinalY(), DEFAULT_DURATION);
-                                postInvalidate();
-                            }
-                        }
-                        startY = moveY;
-                    }
-//                    Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_MOVE=" + ev.getY());
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (startY >= 0) {
-                        upY = ev.getY();
-                        if (Math.abs(cOffset) > 0) slideView(cOffset);
-                    }
-//                    Log.e("ViewGroup", "dispatchTouchEvent--->ACTION_UP=" + ev.getY());
-                    break;
-//            case MotionEvent.ACTION_CANCEL:
-//                Log.e("SlideFloatView", "onInterceptTouchEvent--->ACTION_CANCEL=" + ev.getY());
-//                break;
-                default:
-                    startY = -1;
-                    moveY = -1;
-                    upY = -1;
-                    break;
-            }
-        }
+        Log.e("ViewGroup", "onTouchEvent--->intercept=" + touch);
         return touch;
     }
 

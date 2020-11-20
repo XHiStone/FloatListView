@@ -8,16 +8,20 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.floatlistview.slide.SlideLinkView;
+import com.example.floatlistview.slide.SlideNormalView;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
-    private SlideFloatView slideFloatView;
+    private SlideNormalView slideFloatView;
     private ListView lvContent;
     private AtomicBoolean show = new AtomicBoolean(true);
 
@@ -34,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
         }
         ;
         lvContent.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list));
+        lvContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("MainActivity", "onItemClick--->" + position);
+            }
+        });
 //        slideFloatView.setOffsetHeight(400);
     }
 
