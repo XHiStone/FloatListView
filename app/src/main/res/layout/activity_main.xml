@@ -9,25 +9,14 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onStartClick"
-        android:text="开始" />
+        android:onClick="onClickLinkView"
+        android:text="SlideLinkActivity" />
 
-
-    <com.example.floatlistview.slide.SlideLinkView
-        android:id="@+id/slide_float_view"
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:onClick="onClickNormalView"
+        android:text="SlideNormalActivity" />
 
-        <com.example.floatlistview.slide.base.BaseSlideListview
-            android:id="@+id/lv_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/purple_200"
-            android:scrollbars="none" />
-
-
-    </com.example.floatlistview.slide.SlideLinkView>
 
 </LinearLayout>

@@ -31,6 +31,18 @@ public class SlideNormalView extends BaseSlideView {
     }
 
     @Override
+    public void show() {
+        if (getOffset() == 0 && getChildCount() > 0) {
+            View child = getChildAt(0);
+            measureChild(child, View.MeasureSpec.makeMeasureSpec(getParrentWidth(), MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            setOffset(child.getMeasuredHeight());
+        }
+        if (getMaxHeight() == 0) setMaxHeight(getOffset());
+        super.show();
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         boolean intercept = super.onInterceptTouchEvent(ev);
         View child = getChildAt(0);
@@ -126,7 +138,7 @@ public class SlideNormalView extends BaseSlideView {
             }
         }
         boolean touch = super.onTouchEvent(ev);
-        Log.e("ViewGroup", "onTouchEvent--->intercept=" + touch);
+//        Log.e("ViewGroup", "onTouchEvent--->intercept=" + touch);
         return touch;
     }
 
