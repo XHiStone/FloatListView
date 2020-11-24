@@ -2,8 +2,11 @@ package com.example.floatlistview.slide;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 
@@ -39,17 +42,14 @@ public class SlideLinkView extends BaseSlideView {
 
     @Override
     public void show() {
-//        if (getChildAt(0) instanceof BaseSlideListview && ((BaseSlideListview) getChildAt(0)).getCount() > 0) {
-//            getChildAt(0).post(new Runnable() {
-//                @Override
-//                public void run() {
-        BaseSlideListview listview = (BaseSlideListview) getChildAt(0);
-        listview.setSelectionFromTop(listview.getFirstVisiblePosition(), listview.getChildAt(0).getTop());
-//                }
-//            });
-//        }
-
+        if (isShowing()) scrollToTop();
         super.show();
+    }
+
+    @Override
+    public void hide() {
+        if (isShowing()) scrollToTop();
+        super.hide();
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SlideLinkView extends BaseSlideView {
                     if (getStartY() >= 0 && !intercept) {
                         if (getScroller().getFinalY() + getDefaultHeight() + getStartY() - ev.getY() <= getMaxHeight()) {
                             if (Math.abs(getStartY() - ev.getY()) > 0) {
-                                getScroller().startScroll(0, getScroller().getFinalY(), 0, (int) (getStartY() - ev.getY()), getDEFAULT_DURATION());
+                                getScroller().startScroll(0, getScroller().getFinalY(), 0, (int) (getStartY() - ev.getY()), 0);
                                 postInvalidate();
                             }
                             if (getStartY() - ev.getY() > 0) {
@@ -96,7 +96,7 @@ public class SlideLinkView extends BaseSlideView {
                         } else {
                             setcOffset(0);
                             if (Math.abs(getMaxHeight() - getDefaultHeight() - getScroller().getFinalY()) > 0) {
-                                getScroller().startScroll(0, getScroller().getFinalY(), 0, getMaxHeight() - getDefaultHeight() - getScroller().getFinalY(), getDEFAULT_DURATION());
+                                getScroller().startScroll(0, getScroller().getFinalY(), 0, getMaxHeight() - getDefaultHeight() - getScroller().getFinalY(), 0);
                                 postInvalidate();
                             }
                         }
@@ -117,4 +117,12 @@ public class SlideLinkView extends BaseSlideView {
         }
         return intercept;
     }
+
+    private void scrollToTop() {
+        if (getChildAt(0) instanceof BaseSlideListview && ((BaseSlideListview) getChildAt(0)).getCount() > 0) {
+            BaseSlideListview listview = (BaseSlideListview) getChildAt(0);
+            listview.setScrollTop();
+        }
+    }
+
 }

@@ -16,12 +16,13 @@ import android.widget.TextView;
 
 import com.example.floatlistview.slide.SlideLinkView;
 import com.example.floatlistview.slide.SlideNormalView;
+import com.example.floatlistview.slide.base.BaseSlideView;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
-    private SlideNormalView slideFloatView;
+    private BaseSlideView slideFloatView;
     private ListView lvContent;
     private AtomicBoolean show = new AtomicBoolean(true);
 
@@ -44,30 +45,15 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("MainActivity", "onItemClick--->" + position);
             }
         });
-//        slideFloatView.setOffsetHeight(400);
     }
 
     public void onStartClick(View v) {
         slideFloatView.setOffset(slideFloatView.getParrentHeight() / 2);
         slideFloatView.setMaxHeight(slideFloatView.getParrentHeight() / 5 * 4);
-        if (!slideFloatView.isShowing()) slideFloatView.show();
+        if (!slideFloatView.isShowing())
+            slideFloatView.show();
         else slideFloatView.hide();
 //        slideFloatView.setVisibility(slideFloatView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent ev) {
-//        Log.e("MainActivity", "dispatchTouchEvent--->MotionEvent=" + ev.getAction());
-//        boolean intercept = super.dispatchTouchEvent(ev);
-//        Log.e("MainActivity", "dispatchTouchEvent--->intercept=" + intercept);
-//        return intercept;
-//    }
-//
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        Log.e("MainActivity", "onTouchEvent--->MotionEvent=" + event.getAction());
-//        boolean intercept = super.onTouchEvent(event);
-//        Log.e("MainActivity", "onTouchEvent--->intercept=" + intercept);
-//        return intercept;
-//    }
 }

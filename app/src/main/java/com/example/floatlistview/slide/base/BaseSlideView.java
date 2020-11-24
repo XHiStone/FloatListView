@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BaseSlideView extends LinearLayout {
     private final AtomicBoolean show = new AtomicBoolean(false);
-    private final int DEFAULT_DURATION = 250;
-    private final int SKIP_BOUND = 10;
+    private final int DEFAULT_DURATION = 200;
+    private final int SKIP_BOUND = 5;
     private Scroller scroller;
 
     private int maxHeight;
