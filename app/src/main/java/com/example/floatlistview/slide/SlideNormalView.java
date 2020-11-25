@@ -91,34 +91,34 @@ public class SlideNormalView extends BaseSlideView {
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (getStartY() >= 0) {
-                        if (getScroller().getFinalY() + getDefaultHeight() + getStartY() - ev.getY() <= getMaxHeight()) {
+                        if (getScroller().getFinalY()  + getStartY() - ev.getY() <= getMaxHeight()) {
                             if (Math.abs(getStartY() - ev.getY()) > 0) {
                                 getScroller().startScroll(0, getScroller().getFinalY(), 0, (int) (getStartY() - ev.getY()), getDEFAULT_DURATION());
                                 postInvalidate();
                             }
                             if (getStartY() - ev.getY() > 0) {
-                                if (getScroller().getFinalY() < (getOffset() - getDefaultHeight())) {
-                                    setcOffset(-getScroller().getFinalY() - getDefaultHeight());
+                                if (getScroller().getFinalY() < (getOffset() )) {
+                                    setcOffset(-getScroller().getFinalY() );
                                 } else {
                                     if (getStartY() - ev.getY() > getSKIP_BOUND())
-                                        setcOffset(getMaxHeight() - getScroller().getFinalY() - getDefaultHeight());
+                                        setcOffset(getMaxHeight() - getScroller().getFinalY() );
                                     else
-                                        setcOffset(-getScroller().getFinalY() + getOffset() - getDefaultHeight());
+                                        setcOffset(-getScroller().getFinalY() + getOffset() );
                                 }
                             } else if (getStartY() - ev.getY() < 0) {
-                                if (getScroller().getFinalY() < (getOffset() - getDefaultHeight())) {
-                                    setcOffset(-getScroller().getFinalY() - getDefaultHeight());
+                                if (getScroller().getFinalY() < (getOffset())) {
+                                    setcOffset(-getScroller().getFinalY());
                                 } else {
                                     if (Math.abs(getStartY() - ev.getY()) > getSKIP_BOUND())
-                                        setcOffset(-getScroller().getFinalY() + getOffset() - getDefaultHeight());
+                                        setcOffset(-getScroller().getFinalY() + getOffset());
                                     else
-                                        setcOffset(getMaxHeight() - getScroller().getFinalY() - getDefaultHeight());
+                                        setcOffset(getMaxHeight() - getScroller().getFinalY() );
                                 }
                             }
                         } else {
                             setcOffset(0);
-                            if (Math.abs(getMaxHeight() - getDefaultHeight() - getScroller().getFinalY()) > 0) {
-                                getScroller().startScroll(0, getScroller().getFinalY(), 0, getMaxHeight() - getDefaultHeight() - getScroller().getFinalY(), getDEFAULT_DURATION());
+                            if (Math.abs(getMaxHeight()- getScroller().getFinalY()) > 0) {
+                                getScroller().startScroll(0, getScroller().getFinalY(), 0, getMaxHeight()  - getScroller().getFinalY(), getDEFAULT_DURATION());
                                 postInvalidate();
                             }
                         }

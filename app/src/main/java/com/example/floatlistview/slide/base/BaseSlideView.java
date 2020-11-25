@@ -21,7 +21,6 @@ public class BaseSlideView extends LinearLayout {
     private int maxHeight;
     private int parrentHeight;
     private int parrentWidth;
-    private int defaultHeight;
     private int offset;
     private int cOffset;
 
@@ -36,7 +35,7 @@ public class BaseSlideView extends LinearLayout {
 
     public void hide() {
         if (isShowing()) {
-            this.cOffset = -scroller.getFinalY() - defaultHeight;
+            this.cOffset = -scroller.getFinalY();
             slideView(cOffset);
         }
     }
@@ -102,14 +101,6 @@ public class BaseSlideView extends LinearLayout {
         this.parrentWidth = parrentWidth;
     }
 
-    public int getDefaultHeight() {
-        return defaultHeight;
-    }
-
-    public void setDefaultHeight(int defaultHeight) {
-        this.defaultHeight = defaultHeight;
-    }
-
     public int getOffset() {
         return offset;
     }
@@ -148,8 +139,7 @@ public class BaseSlideView extends LinearLayout {
         if (v != null) {
             measureChild(v, View.MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                     View.MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            this.defaultHeight = v.getMeasuredHeight();
-            setDefaultScroll();
+            setDefaultScroll(v.getMeasuredHeight());
         }
     }
 
@@ -198,8 +188,8 @@ public class BaseSlideView extends LinearLayout {
         this.scroller = new Scroller(getContext(), new DecelerateInterpolator());
     }
 
-    private void setDefaultScroll() {
-        this.scroller.startScroll(0, 0, 0, -defaultHeight, 0);
+    private void setDefaultScroll(int defaultHeight) {
+        this.scroller.startScroll(0, defaultHeight, 0, -defaultHeight, 0);
         postInvalidate();
     }
 }
