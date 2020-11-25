@@ -35,14 +35,16 @@ public class BaseSlideListview extends ListView {
     }
 
     public void setScrollTop() {
-        scrollTop = true;
         int scrollBy;
         if (getChildCount() > 0) {
             View v = getChildAt(0);
             int top = v.getTop();
             if (top < 0) scrollBy = top;
             else scrollBy = -v.getHeight();
-            if (Math.abs(scrollBy) > 0) smoothScrollBy(scrollBy, 0);
+            if (Math.abs(scrollBy) > 0) {
+                scrollTop = true;
+                smoothScrollBy(scrollBy, 0);
+            }
         }
     }
 
