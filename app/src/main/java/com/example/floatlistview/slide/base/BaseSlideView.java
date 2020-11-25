@@ -26,6 +26,8 @@ public class BaseSlideView extends LinearLayout {
 
     private float startY = -1;
 
+    private OnSlideViewHideClick onSlideViewHideClick;
+
     public void show() {
         if (!isShowing()) {
             this.cOffset = offset;
@@ -167,7 +169,12 @@ public class BaseSlideView extends LinearLayout {
                 postInvalidate();
             }
             this.show.set(scroller.getFinalY() > 0);
+            if (!this.show.get() && onSlideViewHideClick != null) this.onSlideViewHideClick.hide();
         }
+    }
+
+    public void setOnSlideViewHideClick(OnSlideViewHideClick onSlideViewHideClick) {
+        this.onSlideViewHideClick = onSlideViewHideClick;
     }
 
     protected boolean isChildView(View child, MotionEvent ev) {
@@ -191,5 +198,10 @@ public class BaseSlideView extends LinearLayout {
     private void setDefaultScroll(int defaultHeight) {
         this.scroller.startScroll(0, defaultHeight, 0, -defaultHeight, 0);
         postInvalidate();
+    }
+
+
+    interface OnSlideViewHideClick {
+        void hide();
     }
 }
