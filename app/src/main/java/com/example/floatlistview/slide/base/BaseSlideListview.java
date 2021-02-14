@@ -60,12 +60,12 @@ public class BaseSlideListview extends ListView {
         super.onLayout(changed, l, t, r, b);
         cHeight = b - t;
 //        if (t > 0 && t != b) smoothScrollToPosition(0);
-        Log.e("tag", "onLayout--->" + changed + " " + l + " " + t + " " + r + " " + b);
+//        Log.e("tag", "onLayout--->" + changed + " " + l + " " + t + " " + r + " " + b);
 
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
 //                Log.e("View", "onTouchEvent--->ACTION_DOWN=" + ev.getY());
@@ -73,7 +73,7 @@ public class BaseSlideListview extends ListView {
                 break;
             case MotionEvent.ACTION_MOVE:
 //                Log.e("View", "onTouchEvent--->ACTION_MOVE=" + ev.getY());
-                Log.e("View", "onTouchEvent--->cHeight=" + cHeight);
+//                Log.e("View", "onTouchEvent--->cHeight=" + cHeight);
                 if (startY - ev.getY() > 0 && cHeight < maxHeight) {
 //                    Log.e("View", "onTouchEvent--->intercept=" + false);
                     return false;
@@ -89,9 +89,37 @@ public class BaseSlideListview extends ListView {
             default:
                 break;
         }
-        return super.onTouchEvent(ev);
-
+        return super.dispatchTouchEvent(ev);
     }
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent ev) {
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+////                Log.e("View", "onTouchEvent--->ACTION_DOWN=" + ev.getY());
+//                startY = ev.getY();
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+////                Log.e("View", "onTouchEvent--->ACTION_MOVE=" + ev.getY());
+////                Log.e("View", "onTouchEvent--->cHeight=" + cHeight);
+//                if (startY - ev.getY() > 0 && cHeight < maxHeight) {
+////                    Log.e("View", "onTouchEvent--->intercept=" + false);
+//                    return false;
+//                } else if (startY - ev.getY() < 0 && isContentViewScrollTop()) {
+////                    Log.e("View", "onTouchEvent--->intercept=" + false);
+//                    return false;
+//                }
+//                startY = ev.getY();
+//                break;
+//            case MotionEvent.ACTION_UP:
+////                Log.e("View", "onTouchEvent--->ACTION_UP=" + ev.getY());
+//                break;
+//            default:
+//                break;
+//        }
+//        return super.onTouchEvent(ev);
+//
+//    }
 
     private boolean isContentViewScrollTop() {
         if (getFirstVisiblePosition() == 0) {

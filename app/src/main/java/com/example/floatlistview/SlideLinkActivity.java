@@ -27,7 +27,7 @@ public class SlideLinkActivity extends AppCompatActivity {
         for (int i = 0; i < 20; i++) {
             list.add("Android");
         }
-        lvContent.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list));
+        lvContent.setAdapter(new TextAdapter<String>(this, list));
         lvContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
