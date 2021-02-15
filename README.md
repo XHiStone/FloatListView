@@ -1,6 +1,6 @@
 # FloatListView
 先看效果图<br>
-<img src="https://img-blog.csdnimg.cn/20201124175500815.gif" width="360" height="640" alt="微信小程序"/><br>
+<img src="https://img-blog.csdnimg.cn/20201124175500815.gif" width="360" height="640" alt="image"/><br>
 最近项目中用到了可拖拽滑动底部浮层，于是乎就写了这个控件，代码不多很简单用到的都是一些基础知识并开源出来供大家参考，感兴趣的可以看看。<br>
 基础知识用到了View的生命周期和View事件分发机制完全可以实现底部滑动浮层控件。<br>
 ### xml中使用：<br>
